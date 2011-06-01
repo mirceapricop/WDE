@@ -1,0 +1,25 @@
+#output {
+  width: 100%;
+  background-color: #000;
+  resize: none;
+  color: #00ff00;
+  font-family: "courier";
+  overflow: auto;
+}
+
+#input {
+  position: absolute;
+  bottom:0;
+  right: 0;
+  left: 0;
+  background-color: #000;
+  color: #00ff00;
+}
+
+#input input {
+  background-color: #000524;
+  color: #00ff00;
+  border: 0;
+  padding: 5px;
+  font-family: "courier";
+}

@@ -1,0 +1,80 @@
+require 'em-websocket'
+require 'pty'
+require 'cgi'
+require 'gibberish'
+
+puts "Starting server"
+shell = PTY.spawn 'env TERM=ansi COLUMNS=63 LINES=21 sh -i'
+@gsocket = nil
+@state = "disconnected"
+
+@pass = ARGV[0] || "default"
+@hashedPass = Gibberish::SHA256(@pass)
+@passCipher = Gibberish::AES.new(@pass)
+# Destroying it so baddies can't even find it in the 
+# memory
+@pass = nil
+
+@aesKey = ""
+
+# Encryption helpers
+def aes(m, k, t, cipher = nil)
+  cipher = Gibberish::AES.new(k) if cipher.nil?
+  if(m == :encrypt)
+    cipher.enc(t)
+  else
+    begin
+      res = cipher.dec(t)
+      return res
+    rescue OpenSSL::Cipher::CipherError
+      return ""
+    end
+  end
+end
+
+# This thread prints output from our virtual shell back into the socket
+Thread.new do 
+  loop do
+    if @state == "live" then
+      c = shell[0].readline
+      @gsocket.send aes(:encrypt, @aesKey, CGI.escapeHTML(c).gsub(" ", "&nbsp;"));
+    end
+  end
+end.priority=1
+
+# Here we handle the socket
+EventMachine.run {
+
+  EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8080, :debug => false) do |ws|
+    ws.onopen { 
+      @state = "authenticating"
+    }
+    ws.onmessage { |msg| 
+      case @state
+      when "live"
+        shell[1].write(aes(:decrypt, @aesKey, msg) + "\n")
+      when "authenticating"
+        received_hash = aes(:decrypt, "", msg, @passCipher)
+        if received_hash != @hashedPass
+          ws.send("AUTHFAIL")
+          @gsocket = nil
+          ws.close_websocket
+        else
+          ws.send("AUTHOK")
+          @state = "sync_key"
+        end
+      when "sync_key"
+        @aesKey = aes(:decrypt, "", msg, @passCipher)
+        ws.send(aes(:encrypt, @aesKey, "Connection established. Type away!"))
+        @gsocket = ws
+        @state = "live"
+      end
+    }
+    ws.onclose { 
+      @state = "disconnected"
+      @gsocket = nil
+      puts "WebSocket closed" 
+    }
+  end
+
+}
