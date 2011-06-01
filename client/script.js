@@ -38,8 +38,7 @@ $(function() {
     
     var shaObj = new jsSHA(pass_in_use);
     var hashvalue = shaObj.getHash("SHA-256", "HEX");
-    encoded = GibberishAES.enc(hashvalue , pass_in_use);
-    ws.send(encoded);
+    socketSend(hashvalue, pass_in_use);
   }
   
   function socketClose(e) {
@@ -50,15 +49,14 @@ $(function() {
   function socketMessage(e) {
     switch(state) {
     case "authenticating":
-      if(e.data == "AUTHOK") {
+      if(GibberishAES.dec(e.data, pass_in_use) == "AUTHOK") {
         aesKey = randomString();
         terminalOutput("Syncing AES key...");
-        ws.send(GibberishAES.enc(aesKey, pass_in_use));
+        socketSend(aesKey, pass_in_use);
         state = "live"
         break;
       } else {
         terminalOutput("Authentication failed.");
-        ws.close();
       }
     case "live":
       terminalChar(GibberishAES.dec(e.data, aesKey));
@@ -67,9 +65,8 @@ $(function() {
     }
   }
   
-  function socketSend(data) {
-    if(state != "live") return;
-    ws.send(GibberishAES.enc(data, aesKey));
+  function socketSend(data, key) {
+    ws.send(GibberishAES.enc(data, key));
   }
   
   // Handling the input commands
@@ -95,7 +92,7 @@ $(function() {
         break;
       }
     } else {
-      socketSend(com);
+        if(state == "live") socketSend(com, aesKey);
     }
     $("#input_field").val("");
   }
