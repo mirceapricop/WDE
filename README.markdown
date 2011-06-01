@@ -43,7 +43,7 @@ These are in no particular order, and have wildly differing difficulty.
 
 ## Thanks
 
-Throughout the project I will use many open-source project. I will try to keep a list
+Throughout the project I will use many open-source projects. I will try to keep a list
 here, but if you find out I am using something of yours without credit, please tell 
 me. That being said:
 
