@@ -6,6 +6,7 @@ require 'gibberish'
 puts "Started server!"
 @shell = PTY.spawn 'env TERM=ansi COLUMNS=63 LINES=21 sh -i'
 @gsocket = nil
+@num_connections = 0
 @state = "disconnected"
 
 @pass = ARGV[0] || "default"
@@ -48,7 +49,7 @@ def handleClient(msg)
   when "authenticating"
     received_hash = aes(:decrypt, "", msg, @passCipher)
     if received_hash != @hashedPass
-      @gsocket.close_connection
+      @gsocket.close_websocket
       @gsocket = nil
     else
       sendClient("AUTHOK", "", @passCipher)
@@ -75,16 +76,23 @@ end.priority=1
 EventMachine.run {
   EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8080, :debug => false) do |ws|
     ws.onopen { 
-      @state = "authenticating"
-      @gsocket = ws
+      @num_connections += 1
+      if @state == "disconnected"
+        @state = "authenticating"
+        @gsocket = ws
+      else
+        ws.close_websocket
+      end
     }
     ws.onmessage { |msg| 
       handleClient(msg)
     }
     ws.onclose { 
-      @state = "disconnected"
-      @gsocket = nil
-      puts "WebSocket closed" 
+      @num_connections -= 1
+      if @num_connections == 0
+        @state = "disconnected"
+        puts "WebSocket closed" 
+      end
     }
   end
 }
