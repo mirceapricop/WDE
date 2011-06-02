@@ -92,7 +92,10 @@ $(function() {
         break;
       }
     } else {
-        if(state == "live") socketSend(com, aesKey);
+        if(state == "live") {
+          if(com[0] == '\\') com = com.substring(1);
+          socketSend(com, aesKey);
+        }
     }
     $("#input_field").val("");
   }
