@@ -4,7 +4,6 @@ require 'cgi'
 require 'gibberish'
 
 puts "Started server!"
-@shell = PTY.spawn 'env TERM=ansi COLUMNS=63 LINES=21 sh -i'
 @gsocket = nil
 @num_connections = 0
 @state = "disconnected"
@@ -12,10 +11,15 @@ puts "Started server!"
 @pass = ARGV[0] || "default"
 @hashedPass = Gibberish::SHA256(@pass)
 @passCipher = Gibberish::AES.new(@pass)
-# Destroying it so baddies can't even find it in the 
-# memory
-@pass = nil
 @aesKey = ""
+
+# Bit of paranoia here
+# Destroying pass so baddies can't even find it in memory
+@pass = nil
+# You can have the start server command hidden by putting a
+# space in front of it.
+
+@shell = PTY.spawn 'env TERM=ansi COLUMNS=63 LINES=21 sh -i'
 
 # Encryption helper
 def aes(m, k, t, cipher = nil)
