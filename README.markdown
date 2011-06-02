@@ -16,13 +16,8 @@ enchancing the communication protocol when needed.
 
 These are in no particular order, and have wildly differing difficulty.
 
-* Abstract receive / send to work with any connection layer
-* Delete server start command from history on startup
-* Ensure single-connection
-* Completion with tab
-* Client command history
 * Fix the ncurses issue (starting anything like vim totally bricks the server)
-* Fallback to -> Flash -> Long polling when WebSockets aren't there
+* Delete server start command from history on startup
 * Out-of-shell commands
     * :break
     * :restart [password]
@@ -32,6 +27,10 @@ These are in no particular order, and have wildly differing difficulty.
 * Project tree panel
 * Multiple shell tabs
 * Pack server into a gem
+* Completion with tab
+* Client command history
+* Extract connection implementation into switchable adapters
+* Fallback to -> Flash -> Long polling when WebSockets aren't there
 
 ## Usage
 
