@@ -3,7 +3,7 @@ $(function() {
   function resize_terminal() {
     $("#input_field").width( $("#input").width() - 20 );
     $("#output").height( $("#terminal").height() - $("#input").height() );
-    $("#output").width($("#terminal").width());
+    $("#output").width($("#terminal").width()-5);
   }
   
   $(window).resize(resize_terminal);
@@ -61,6 +61,14 @@ $(function() {
       } else {
         terminalOutput("Authentication failed.");
       }
+    case "fetching":
+      dec = GibberishAES.dec(e.data, aesKey)
+      if (dec.charAt(dec.length-3) == "$") {
+        editor.getSession().setValue(editor.getSession().getValue() + dec.substring(0, dec.length-3) + "\n");
+      }
+      else if (dec == "DONE")
+        state = "live";
+      break;
     case "live":
       terminalChar(GibberishAES.dec(e.data, aesKey));
       terminalChar('\n');
@@ -92,9 +100,16 @@ $(function() {
       case ":close":
         ws.close();
         ws = null;
+        main_layout.close("north");
         break;
       case ":break":
         socketSend("BR:", aesKey);
+        break;
+      case ":fetch":
+        state = "fetching";
+        editor.getSession().setValue("");
+        main_layout.open("north");
+        socketSend("FETCH:" + com.split(" ")[1], aesKey);
         break;
       default:
         terminalOutput("Don't know that one. Use \\ to escape leading :")

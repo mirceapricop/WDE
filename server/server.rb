@@ -19,7 +19,7 @@ require 'gibberish'
 # space in front of it.
 
 def start_shell
-  @shell = PTY.spawn 'env TERM=dumb COLUMNS=63 LINES=21 sh -i'
+  @shell = PTY.spawn 'env PS1="\w>" TERM=dumb COLUMNS=63 LINES=21 sh -i'
 end
 
 # Encryption helper
@@ -47,6 +47,17 @@ def sendClient(data, key = nil, cipher = nil)
   end
 end
 
+def kill_shell_procs
+  # Kill proc executing on virtual shell
+  procs = %x[ps -t #{File.basename(@shell[1].path)}].split("\n")
+  procs.each do |p|
+    unless p.include? "sh" or p.include? "PID"
+      pid = p.split(' ')[0].to_i
+      system("kill #{pid}")
+    end
+  end
+end
+
 def handleClient(msg)
   case @state
   when "live"
@@ -58,14 +69,11 @@ def handleClient(msg)
       # Execute command
       @shell[1].write(com + "\n")
     when "BR"
-      # Kill proc executing on virtual shell
-      procs = %x[ps -t #{File.basename(@shell[1].path)}].split("\n")
-      procs.each do |p|
-        unless p.include? "sh" or p.include? "PID"
-          pid = p.split(' ')[0].to_i
-          system("kill #{pid}")
-        end
-      end
+      kill_shell_procs
+    when "FETCH"
+      kill_shell_procs
+      @state = "fetching"
+      @shell[1].write("cat " + com + " -E \n\n");
     end
   when "authenticating"
     received_hash = aes(:decrypt, "", msg, @passCipher)
@@ -88,9 +96,18 @@ start_shell
 # This thread prints output from our virtual shell back into the socket
 Thread.new do 
   loop do
-    if @state == "live" then
+    case @state
+    when "live"
       c = @shell[0].readline
-      sendClient(CGI.escapeHTML(c).gsub(" ", "&nbsp;"), @aesKey);
+      sendClient(CGI.escapeHTML(c).gsub(" ", "&nbsp;"), @aesKey) if @state == "live"
+    when "fetching"
+      c = @shell[0].readline
+      if c[c.length-3] == "$"
+        sendClient(c, @aesKey)
+      else
+        sendClient("DONE", @aesKey)
+        @state = "live"
+      end
     end
   end
 end.priority=1
