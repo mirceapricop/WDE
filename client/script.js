@@ -63,11 +63,18 @@ $(function() {
       }
     case "fetching":
       dec = GibberishAES.dec(e.data, aesKey)
-      if (dec.charAt(dec.length-3) == "$") {
-        editor.getSession().setValue(editor.getSession().getValue() + dec.substring(0, dec.length-3) + "\n");
+      if (dec.charAt(dec.length-1) == "$") {
+        editor.getSession().setValue(editor.getSession().getValue() + dec.substring(0, dec.length-1) + "\n");
       }
-      else if (dec == "DONE")
-        state = "live";
+      else 
+        if (dec == "DONE") {
+          state = "live";
+          main_layout.open("north");
+        }
+        else {
+          terminalOutput("Error at fetching. Maybe a typo?");
+          state = "live";
+        }
       break;
     case "live":
       terminalChar(GibberishAES.dec(e.data, aesKey));
@@ -108,7 +115,6 @@ $(function() {
       case ":fetch":
         state = "fetching";
         editor.getSession().setValue("");
-        main_layout.open("north");
         socketSend("FETCH:" + com.split(" ")[1], aesKey);
         break;
       default:

@@ -17,9 +17,11 @@ require 'gibberish'
 @pass = nil
 # You can have the start server command hidden by putting a
 # space in front of it.
+@current_dir = ""
+@output_buffer = ""
 
 def start_shell
-  @shell = PTY.spawn 'env PS1="\w>" TERM=dumb COLUMNS=63 LINES=21 sh -i'
+  @shell = PTY.spawn 'env PS1="\r\r\r\w>" TERM=dumb COLUMNS=63 LINES=21 sh -i'
 end
 
 # Encryption helper
@@ -71,9 +73,16 @@ def handleClient(msg)
     when "BR"
       kill_shell_procs
     when "FETCH"
-      kill_shell_procs
       @state = "fetching"
-      @shell[1].write("cat " + com + " -E \n\n");
+      begin
+        File.open(File.expand_path(@current_dir) + "/#{com}").each_line { |l|
+          sendClient(l + "$", @aesKey);
+        }
+        sendClient("DONE", @aesKey);
+      rescue
+        sendClient("FAIL", @aesKey);
+      end
+      @state = "live"
     end
   when "authenticating"
     received_hash = aes(:decrypt, "", msg, @passCipher)
@@ -94,19 +103,24 @@ end
 puts "Started server!"
 start_shell
 # This thread prints output from our virtual shell back into the socket
+def prepare_output(msg)
+  CGI.escapeHTML(msg).gsub(" ", "&nbsp;")
+end
+
 Thread.new do 
   loop do
     case @state
     when "live"
-      c = @shell[0].readline
-      sendClient(CGI.escapeHTML(c).gsub(" ", "&nbsp;"), @aesKey) if @state == "live"
-    when "fetching"
-      c = @shell[0].readline
-      if c[c.length-3] == "$"
-        sendClient(c, @aesKey)
-      else
-        sendClient("DONE", @aesKey)
-        @state = "live"
+      c = @shell[0].read(1)
+      @output_buffer << c
+      
+      @output_buffer.match(/^\r\r\r(.*)>/) do |m|
+        @current_dir = m[1]
+      end
+
+      if @output_buffer.include? "\n"
+        sendClient(prepare_output(@output_buffer), @aesKey) if @state == "live"
+        @output_buffer = ""
       end
     end
   end
