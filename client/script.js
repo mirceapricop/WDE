@@ -1,10 +1,12 @@
 $(function() {
   // Resizing the fields
-  $(window).resize(function() {
+  function resize_terminal() {
     $("#input_field").width( $("#input").width() - 20 );
-    $("#output").height( $(window).height() - $("#input").height() );
-    $("#output").width($(window).width());
-  });
+    $("#output").height( $("#terminal").height() - $("#input").height() );
+    $("#output").width($("#terminal").width());
+  }
+  
+  $(window).resize(resize_terminal);
   
   $("#input_field").width( $("#input").width() - 20 );
   $("#output").height( $(window).height() - $("#input").height() );
@@ -129,6 +131,15 @@ $(function() {
   }
   
   terminalOutput("Welcome, type :open <host> <password> to connect");
+  
+  // Layouting
+  $('body').layout({
+    onresize: resize_terminal,
+    north__initClosed: true,
+    north__size: $(window).height()*(2/3)
+  });
+  $('body > .ui-layout-north').layout();
+  resize_terminal();
   
   // Helpers
   

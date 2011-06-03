@@ -2,22 +2,31 @@
   <head>
     <title>Code Anywhere!</title>
     <link rel="stylesheet" href="reset.css" type="text/css" />
+    <link rel="stylesheet" href="layout-default.css" type="text/css" />
     <link rel="stylesheet" href="style.css" type="text/css" />
   </head>
   
   <body>
-    <div id="output">
-      <ul id="output_lines">
-        <li class="last"></li>
-      </ul>
+    <div class="ui-layout-north">
+      <div class="ui-layout-west">Project Explorer</div>
+      <div class="ui-layout-center">Editor</div>
     </div>
-    <div id="input">
-      <span id="input_prompt" class=".prompt">></span>
-      <input type="text" id="input_field" />
+    <div id="terminal" class="ui-layout-center">
+      <div id="output">
+        <ul id="output_lines">
+          <li class="last"></li>
+        </ul>
+      </div>
+      <div id="input">
+        <span id="input_prompt" class=".prompt">></span>
+        <input type="text" id="input_field" />
+      </div>
     </div>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
     <script type="text/javascript" src="crypto/sha/sha.js"></script>
     <script type="text/javascript" src="crypto/aes/gibberish-aes.min.js"></script>
+    <script type="text/javascript" src="jquery.layout.js"></script>
     <script type="text/javascript" src="script.js"></script>
   </body>
 </html>
