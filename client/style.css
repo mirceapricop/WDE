@@ -5,6 +5,7 @@
   color: #00ff00;
   font-family: "courier";
   overflow: auto;
+  font-size: 12px;
 }
 
 #input {

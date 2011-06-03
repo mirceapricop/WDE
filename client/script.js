@@ -133,13 +133,26 @@ $(function() {
   terminalOutput("Welcome, type :open <host> <password> to connect");
   
   // Layouting
-  $('body').layout({
-    onresize: resize_terminal,
+  function resize_UI() {
+    resize_terminal();
+    editor.resize();
+  }
+  
+  var main_layout = $('body').layout({
+    onresize: resize_UI,
     north__initClosed: true,
     north__size: $(window).height()*(2/3)
   });
-  $('body > .ui-layout-north').layout();
+  var north_layout = $('body > .ui-layout-north').layout();
   resize_terminal();
+  
+  // Firing up the editor
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/twilight");
+  editor.setShowPrintMargin(false);
+  editor.getSession().setTabSize(2);
+  editor.getSession().setUseWrapMode(true);
+  
   
   // Helpers
   
