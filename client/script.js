@@ -3,6 +3,7 @@ $(function() {
   $(window).resize(function() {
     $("#input_field").width( $("#input").width() - 20 );
     $("#output").height( $(window).height() - $("#input").height() );
+    $("#output").width($(window).width());
   });
   
   $("#input_field").width( $("#input").width() - 20 );
@@ -90,11 +91,16 @@ $(function() {
         ws.close();
         ws = null;
         break;
+      case ":break":
+        socketSend("BR:", aesKey);
+        break;
+      default:
+        terminalOutput("Don't know that one. Use \\ to escape leading :")
       }
     } else {
         if(state == "live") {
           if(com[0] == '\\') com = com.substring(1);
-          socketSend(com, aesKey);
+          socketSend("EXEC:" + com, aesKey);
         }
     }
     $("#input_field").val("");
@@ -122,7 +128,7 @@ $(function() {
     $("#output").scrollTop($("#output")[0].scrollHeight);
   }
   
-  terminalOutput("Welcome, type :open host to connect");
+  terminalOutput("Welcome, type :open <host> <password> to connect");
   
   // Helpers
   

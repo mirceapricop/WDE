@@ -3,7 +3,6 @@ require 'pty'
 require 'cgi'
 require 'gibberish'
 
-puts "Started server!"
 @gsocket = nil
 @num_connections = 0
 @state = "disconnected"
@@ -19,7 +18,9 @@ puts "Started server!"
 # You can have the start server command hidden by putting a
 # space in front of it.
 
-@shell = PTY.spawn 'env TERM=ansi COLUMNS=63 LINES=21 sh -i'
+def start_shell
+  @shell = PTY.spawn 'env TERM=dumb COLUMNS=63 LINES=21 sh -i'
+end
 
 # Encryption helper
 def aes(m, k, t, cipher = nil)
@@ -49,7 +50,23 @@ end
 def handleClient(msg)
   case @state
   when "live"
-    @shell[1].write(aes(:decrypt, @aesKey, msg) + "\n")
+    msg = aes(:decrypt, @aesKey, msg)
+    com_type = msg.split(":", 2)[0]
+    com = msg.split(":", 2)[1]
+    case com_type
+    when "EXEC"
+      # Execute command
+      @shell[1].write(com + "\n")
+    when "BR"
+      # Kill proc executing on virtual shell
+      procs = %x[ps -t #{File.basename(@shell[1].path)}].split("\n")
+      procs.each do |p|
+        unless p.include? "sh" or p.include? "PID"
+          pid = p.split(' ')[0].to_i
+          system("kill #{pid}")
+        end
+      end
+    end
   when "authenticating"
     received_hash = aes(:decrypt, "", msg, @passCipher)
     if received_hash != @hashedPass
@@ -66,6 +83,8 @@ def handleClient(msg)
   end
 end
 
+puts "Started server!"
+start_shell
 # This thread prints output from our virtual shell back into the socket
 Thread.new do 
   loop do
