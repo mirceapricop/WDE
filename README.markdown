@@ -16,11 +16,6 @@ enchancing the communication protocol when needed.
 
 These are in no particular order, and have wildly differing difficulty.
 
-* Fix the ncurses issue (starting anything like vim totally bricks the server)
-* Delete server start command from history on startup
-* Out-of-shell commands
-    * :break
-    * :restart [password]
 * Editor panel
     * :edit
     * :w / :push / :autopush (maybe)
@@ -50,3 +45,5 @@ me. That being said:
 * [gibberish](http://github.com/mdp/gibberish)
 * [gibberish-aes](http://github.com/mdp/gibberish-aes)
 * [js sha-256 implementation](http://etherhack.co.uk/main.html)
+* [jQuery UI Layout plugin](http://layout.jquery-dev.net/index.cfm)
+* [the amazing Ace HTML5 Editor](http://ace.ajax.org/)
