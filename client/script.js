@@ -4,6 +4,7 @@ $(function() {
     $("#input_field").width( $("#input").width() - 20 );
     $("#output").height( $("#terminal").height() - $("#input").height() );
     $("#output").width($("#terminal").width()-5);
+    scrollOutput();
   }
   
   $(window).resize(resize_terminal);
@@ -164,7 +165,9 @@ $(function() {
     north__initClosed: true,
     north__size: $(window).height()*(2/3)
   });
-  var north_layout = $('body > .ui-layout-north').layout();
+  var north_layout = $('body > .ui-layout-north').layout({
+    onresize: resize_UI
+  });
   resize_terminal();
   
   // Firing up the editor
