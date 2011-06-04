@@ -162,11 +162,12 @@ $(function() {
   
   var main_layout = $('body').layout({
     onresize: resize_UI,
-    north__initClosed: true,
+    north__initClosed: false,
     north__size: $(window).height()*(2/3)
   });
   var north_layout = $('body > .ui-layout-north').layout({
-    onresize: resize_UI
+    onresize: resize_UI,
+    west__size: $(window).width()*(1/6)
   });
   resize_terminal();
   
@@ -177,6 +178,25 @@ $(function() {
   editor.getSession().setTabSize(2);
   editor.getSession().setUseWrapMode(true);
   
+  // Firing up the Project panel
+	tree = $("#project").jstree({ 
+		"json_data" : {
+			"data" : [
+				{ 
+					"data" : "A node", 
+					"children" : [ "Child 1", "A Child 2" ]
+				},
+				{ 
+					"data" : "Another node"
+				} 
+			]
+		},
+		"plugins" : [ "themes", "json_data", "ui" ],
+    "themes" : {
+      "theme": "dark_apple",
+      "dots": false
+    }
+	}).bind("select_node.jstree", function(e, data) { $("#project").jstree("toggle_node", data.rslt.obj); });
   
   // Helpers
   

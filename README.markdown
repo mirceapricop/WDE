@@ -17,7 +17,6 @@ enchancing the communication protocol when needed.
 These are in no particular order, and have wildly differing difficulty.
 
 * Editor panel
-    * :edit
     * :w / :push / :autopush (maybe)
 * Project tree panel
 * Multiple shell tabs
@@ -26,6 +25,7 @@ These are in no particular order, and have wildly differing difficulty.
 * Client command history
 * Extract connection implementation into switchable adapters
 * Fallback to -> Flash -> Long polling when WebSockets aren't there
+* Figure out collaborative edititng
 
 ## Usage
 
@@ -47,3 +47,4 @@ me. That being said:
 * [js sha-256 implementation](http://etherhack.co.uk/main.html)
 * [jQuery UI Layout plugin](http://layout.jquery-dev.net/index.cfm)
 * [the amazing Ace HTML5 Editor](http://ace.ajax.org/)
+* [jsTree plugin](http://jstree.com)

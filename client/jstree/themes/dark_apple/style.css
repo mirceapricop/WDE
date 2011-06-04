@@ -1,0 +1,61 @@
+/*
+ * jsTree dark_apple theme 1.0
+ * Supported features: dots/no-dots, icons/no-icons, focused, loading
+ * Supported plugins: ui (hovered, clicked), checkbox, contextmenu, search
+ */
+
+.jstree-dark_apple > ul { background:url("bg.jpg") left top repeat; }
+.jstree-dark_apple li, 
+.jstree-dark_apple ins { background-image:url("d.png"); background-repeat:no-repeat; background-color:transparent; }
+.jstree-dark_apple li { background-position:-90px 0; background-repeat:repeat-y;  }
+.jstree-dark_apple li.jstree-last { background:transparent; }
+.jstree-dark_apple .jstree-open > ins { background-position:-72px 0; }
+.jstree-dark_apple .jstree-closed > ins { background-position:-54px 0; }
+.jstree-dark_apple .jstree-leaf > ins { background-position:-36px 0; }
+
+.jstree-dark_apple a { color: white; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px; text-shadow:1px 1px 1px black; }
+.jstree-dark_apple .jstree-hovered { background:#b8b8b8; border:1px solid #fff; padding:0 3px 0 1px; }
+.jstree-dark_apple .jstree-clicked { background:#233351; border:1px solid #b8b8b8; padding:0 3px 0 1px; }
+.jstree-dark_apple a .jstree-icon { background-position:-56px -20px; }
+.jstree-dark_apple a.jstree-loading .jstree-icon { background:url("throbber.gif") center center no-repeat !important; }
+
+.jstree-dark_apple.jstree-focused { background: #9d9d9d; }
+
+.jstree-dark_apple .jstree-no-dots li, 
+.jstree-dark_apple .jstree-no-dots .jstree-leaf > ins { background:transparent; }
+.jstree-dark_apple .jstree-no-dots .jstree-open > ins { background-position:-18px 0; }
+.jstree-dark_apple .jstree-no-dots .jstree-closed > ins { background-position:0 0; }
+
+.jstree-dark_apple .jstree-no-icons a .jstree-icon { display:none; }
+
+.jstree-dark_apple .jstree-search { font-style:italic; }
+
+.jstree-dark_apple .jstree-no-icons .jstree-checkbox { display:inline-block; }
+.jstree-dark_apple .jstree-no-checkboxes .jstree-checkbox { display:none !important; }
+.jstree-dark_apple .jstree-checked > a > .jstree-checkbox { background-position:-38px -19px; }
+.jstree-dark_apple .jstree-unchecked > a > .jstree-checkbox { background-position:-2px -19px; }
+.jstree-dark_apple .jstree-undetermined > a > .jstree-checkbox { background-position:-20px -19px; }
+.jstree-dark_apple .jstree-checked > a > .checkbox:hover { background-position:-38px -37px; }
+.jstree-dark_apple .jstree-unchecked > a > .jstree-checkbox:hover { background-position:-2px -37px; }
+.jstree-dark_apple .jstree-undetermined > a > .jstree-checkbox:hover { background-position:-20px -37px; }
+
+#vakata-dragged.jstree-dark_apple ins { background:transparent !important; }
+#vakata-dragged.jstree-dark_apple .jstree-ok { background:url("d.png") -2px -53px no-repeat !important; }
+#vakata-dragged.jstree-dark_apple .jstree-invalid { background:url("d.png") -18px -53px no-repeat !important; }
+#jstree-marker.jstree-dark_apple { background:url("d.png") -41px -57px no-repeat !important; text-indent:-100px; }
+
+.jstree-dark_apple a.jstree-search { color:aqua; }
+.jstree-dark_apple .jstree-locked a { color:silver; cursor:default; }
+
+#vakata-contextmenu.jstree-dark_apple-context, 
+#vakata-contextmenu.jstree-dark_apple-context li ul { background:#f0f0f0; border:1px solid #979797; -moz-box-shadow: 1px 1px 2px #999; -webkit-box-shadow: 1px 1px 2px #999; box-shadow: 1px 1px 2px #999; }
+#vakata-contextmenu.jstree-dark_apple-context li { }
+#vakata-contextmenu.jstree-dark_apple-context a { color:black; }
+#vakata-contextmenu.jstree-dark_apple-context a:hover, 
+#vakata-contextmenu.jstree-dark_apple-context .vakata-hover > a { padding:0 5px; background:#e8eff7; border:1px solid #aecff7; color:black; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px; }
+#vakata-contextmenu.jstree-dark_apple-context li.jstree-contextmenu-disabled a, 
+#vakata-contextmenu.jstree-dark_apple-context li.jstree-contextmenu-disabled a:hover { color:silver; background:transparent; border:0; padding:1px 4px; }
+#vakata-contextmenu.jstree-dark_apple-context li.vakata-separator { background:white; border-top:1px solid #e0e0e0; margin:0; }
+#vakata-contextmenu.jstree-dark_apple-context li ul { margin-left:-4px; }
+
+/* TODO: IE6 support - the `>` selectors */
