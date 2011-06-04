@@ -36,7 +36,7 @@ class SocketManager
           end
 
           if @output_buffer.include? "\n"
-            sendClient(prepare_output(@output_buffer), @aesKey) if @state == "live"
+            sendClient("TERM:"+prepare_output(@output_buffer),@aesKey) if @state=="live"
             @output_buffer = ""
           end
         end
@@ -101,16 +101,14 @@ class SocketManager
       when "BR"
         kill_shell_procs
       when "FETCH"
-        @state = "fetching"
         begin
          File.open(File.expand_path(@current_dir) + "/#{com}").each_line { |l|
-            sendClient(l + "$", @aesKey);
+            sendClient("FETCH:"+l, @aesKey);
           }
-          sendClient("DONE", @aesKey);
+          sendClient("FETCH_DONE:", @aesKey);
         rescue
-          sendClient("FAIL", @aesKey);
+          sendClient("FETCH_FAIL:", @aesKey);
         end
-        @state = "live"
       end
     when "authenticating"
       received_hash = aes(:decrypt, "", msg, @passCipher)
@@ -123,7 +121,7 @@ class SocketManager
       end
     when "sync_key"
       @aesKey = aes(:decrypt, "", msg, @passCipher)
-      sendClient("Connection established. Type away!", @aesKey)
+      sendClient("TERM: Connection established. Type away!", @aesKey)
       @state = "live"
     end
   end

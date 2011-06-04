@@ -58,28 +58,30 @@ $(function() {
         terminalOutput("Syncing AES key...");
         socketSend(aesKey, pass_in_use);
         state = "live"
-        break;
       } else {
         terminalOutput("Authentication failed.");
       }
-    case "fetching":
-      dec = GibberishAES.dec(e.data, aesKey)
-      if (dec.charAt(dec.length-1) == "$") {
-        editor.getSession().setValue(editor.getSession().getValue() + dec.substring(0, dec.length-1) + "\n");
-      }
-      else 
-        if (dec == "DONE") {
-          state = "live";
-          main_layout.open("north");
-        }
-        else {
-          terminalOutput("Error at fetching. Maybe a typo?");
-          state = "live";
-        }
       break;
     case "live":
-      terminalChar(GibberishAES.dec(e.data, aesKey));
-      terminalChar('\n');
+      data = GibberishAES.dec(e.data, aesKey);
+      split = data.indexOf(':');
+      com_type = data.slice(0,split)
+      com = data.slice(split+1);
+      switch(com_type) {
+      case "TERM":
+        terminalChar(com);
+        terminalChar('\n');
+        break;
+      case "FETCH":
+        editor.getSession().setValue(editor.getSession().getValue() + com + "\n");
+        break;
+      case "FETCH_DONE":
+        main_layout.open("north");
+        break;
+      case "FETCH_FAIL":
+        terminalOutput("Error at fetching. Maybe a typo?");
+        break;
+      }
       break;
     }
   }
@@ -114,7 +116,6 @@ $(function() {
         socketSend("BR:", aesKey);
         break;
       case ":fetch":
-        state = "fetching";
         editor.getSession().setValue("");
         socketSend("FETCH:" + com.split(" ")[1], aesKey);
         break;
