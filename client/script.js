@@ -83,7 +83,7 @@ $(function() {
         break;
       case "TREE_INS":
         split = com.indexOf('/');
-        node_id = "#" + com.slice(0, split);
+        node_id = "#" + escape_id(com.slice(0, split));
         node_json = com.slice(split+1);
         tree = $.jstree._reference(node_id);
         tree.create_node(node_id, "inside", $.parseJSON(node_json));
@@ -92,8 +92,8 @@ $(function() {
       case "TREE_NEW":
         $(tree_root + " ul").empty();
         $(tree_root).attr("id", com);
-        tree_root = "#" + com;
-        $(tree_root + " a").text(com.slice(com.lastIndexOf('-')+1));
+        tree_root = "#" + escape_id(com);
+        $(tree_root + " a").text(com.slice(com.lastIndexOf('|')+1));
         break;
       }
       break;
@@ -194,7 +194,15 @@ $(function() {
   editor.getSession().setUseWrapMode(true);
   
   // Firing up the Project panel
-	$("#project").jstree({ 
+  function escape_id(id) {
+    return id.replace(/\|/g, '\\|');
+  }
+  
+  function file_id_to_path(s) {
+    return s.replace($(tree_root)[0].id,"").replace(/\|/g, "/");
+  }
+  
+  $("#project").jstree({ 
 		"json_data" : {
 			"data" : [
 				{ 
@@ -213,8 +221,9 @@ $(function() {
         },
         "default": {
           "icon": { "image": "jstree/themes/dark_apple/file.png" },
-          "select_node": function() {
-            alert("file");
+          "select_node": function(e) {
+            editor.getSession().setValue("");
+            socketSend("FETCH:" + file_id_to_path(e[0].id), aesKey);
           }
         }
       }

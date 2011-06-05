@@ -5,6 +5,8 @@ require 'cgi'
 class SocketManager
   
   def initialize(sock, pass = nil)
+    @escape = "|" #The prob of the pipe char coming up in a file name is small enough for me
+    
     @gsocket = sock
     @state = "disconnected"
 
@@ -31,7 +33,7 @@ class SocketManager
           c = @shell[0].read(1)
           @output_buffer << c
       
-          @output_buffer.match(/^\r\r\r(.*)>/) do |m|
+          @output_buffer.match(/^\r\r\r(.*?)>/) do |m|
             old_dir = @current_dir
             @current_dir = m[1]
             if old_dir != @current_dir
@@ -51,7 +53,7 @@ class SocketManager
 
   def tree_id(s)
     return "root" if s.length == 1 # If s is empty
-    "root-" + s.gsub("//","/")[1..s.length-1].gsub('/','-')
+    "root#{@escape}" + s.gsub("//","/")[1..s.length-1].gsub('/',"#{@escape}")
   end
 
   def file_type(s)
