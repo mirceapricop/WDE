@@ -73,7 +73,7 @@ $(function() {
         terminalChar('\n');
         break;
       case "FETCH":
-        editor.getSession().setValue(editor.getSession().getValue() + com);
+        editor.insert(com);
         break;
       case "FETCH_DONE":
         main_layout.open("north");
@@ -187,7 +187,7 @@ $(function() {
   resize_terminal();
   
   // Firing up the editor
-  var editor = ace.edit("editor");
+  editor = ace.edit("editor");
   editor.setTheme("ace/theme/twilight");
   editor.setShowPrintMargin(false);
   editor.getSession().setTabSize(2);
