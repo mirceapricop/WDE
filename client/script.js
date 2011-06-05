@@ -79,7 +79,7 @@ $(function() {
         main_layout.open("north");
         break;
       case "FETCH_FAIL":
-        terminalOutput("Error at fetching. Maybe a typo?");
+        terminalOutput("Error at fetching. Use touch to create a new file.");
         break;
       case "TREE_INS":
         split = com.indexOf('/');
@@ -88,6 +88,12 @@ $(function() {
         tree = $.jstree._reference(node_id);
         tree.create_node(node_id, "inside", $.parseJSON(node_json));
         tree.open_node(node_id);
+        break;
+      case "TREE_NEW":
+        $(tree_root + " ul").remove();
+        $(tree_root).attr("id", com);
+        tree_root = "#" + com;
+        $(tree_root + " a").text(com.slice(com.lastIndexOf('-')+1));
         break;
       }
       break;
@@ -193,7 +199,7 @@ $(function() {
 			"data" : [
 				{ 
 					"data" : "/", 
-					"attr": { "id": "home-mircea-dev-webDE" },
+					"attr": { "id": "root" },
 				}
 			],
       "progressive_render": true

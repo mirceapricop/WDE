@@ -34,7 +34,10 @@ class SocketManager
           @output_buffer.match(/^\r\r\r(.*)>/) do |m|
             old_dir = @current_dir
             @current_dir = m[1]
-            send_tree(@current_dir) if old_dir != @current_dir
+            if old_dir != @current_dir
+              sendClient("TREE_NEW:#{tree_id(File.expand_path(@current_dir))}", @aesKey)
+              send_tree(@current_dir)
+            end
           end
 
           if @output_buffer.include? "\n"
