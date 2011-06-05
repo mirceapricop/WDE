@@ -73,7 +73,7 @@ $(function() {
         terminalChar('\n');
         break;
       case "FETCH":
-        editor.getSession().setValue(editor.getSession().getValue() + com + "\n");
+        editor.getSession().setValue(editor.getSession().getValue() + com);
         break;
       case "FETCH_DONE":
         main_layout.open("north");
@@ -90,7 +90,7 @@ $(function() {
         tree.open_node(node_id);
         break;
       case "TREE_NEW":
-        $(tree_root + " ul").remove();
+        $(tree_root + " ul").empty();
         $(tree_root).attr("id", com);
         tree_root = "#" + com;
         $(tree_root + " a").text(com.slice(com.lastIndexOf('-')+1));
@@ -199,20 +199,32 @@ $(function() {
 			"data" : [
 				{ 
 					"data" : "/", 
-					"attr": { "id": "root" },
+					"attr": { "id": "root", "rel": "folder" }
 				}
-			],
-      "progressive_render": true
+			]
 		},
-		"plugins" : [ "themes", "json_data", "ui" ],
+    "types": {
+      "types": {      
+        "folder": {
+          "icon": { "image": "jstree/themes/dark_apple/folder.png" },
+          "select_node": function(e) {
+            alert(e[0].id);
+          }
+        },
+        "default": {
+          "icon": { "image": "jstree/themes/dark_apple/file.png" },
+          "select_node": function() {
+            alert("file");
+          }
+        }
+      }
+    },
     "themes" : {
       "theme": "dark_apple",
       "dots": false
-    }
-	})
-  .bind("select_node.jstree", function(e, data) { 
-    $("#project").jstree("toggle_node", data.rslt.obj);
-  });
+    },
+    "plugins" : [ "themes", "json_data", "ui", "types" ]
+	});
   var tree_root = "#root"
   
   // Helpers

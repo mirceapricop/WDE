@@ -15,7 +15,7 @@
 
 .jstree-dark_apple a { color: white; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px; text-shadow:1px 1px 1px black; }
 .jstree-dark_apple .jstree-hovered { background:#b8b8b8; border:1px solid #fff; padding:0 3px 0 1px; }
-.jstree-dark_apple .jstree-clicked { background:#233351; border:1px solid #b8b8b8; padding:0 3px 0 1px; }
+.jstree-dark_apple .jstree-clicked { background:#6387a6; border:1px solid #b8b8b8; padding:0 3px 0 1px; }
 .jstree-dark_apple a .jstree-icon { background-position:-56px -20px; }
 .jstree-dark_apple a.jstree-loading .jstree-icon { background:url("throbber.gif") center center no-repeat !important; }
 

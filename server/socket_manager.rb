@@ -50,12 +50,17 @@ class SocketManager
   end
 
   def tree_id(s)
-    s[1..s.length-1].gsub('/','-')
+    return "root" if s.length == 1 # If s is empty
+    "root-" + s.gsub("//","/")[1..s.length-1].gsub('/','-')
+  end
+
+  def file_type(s)
+    File.directory?(s) ? '"folder"' : '"file"'
   end
 
   def tree_json(s)
-    '{ "attr": { "id": "'+tree_id(s)+'" }, 
-       "data": "'+File.basename(s)+'" }'
+    '{ "attr": { "id": "'+tree_id(s)+'", "rel": '+file_type(s)+'}, 
+       "data": "' + File.basename(s)+'" }'
   end
 
   def send_tree(root)
