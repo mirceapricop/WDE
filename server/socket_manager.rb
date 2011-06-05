@@ -136,6 +136,8 @@ class SocketManager
         rescue
           sendClient("FETCH_FAIL:", @aesKey);
         end
+      when "TREE_GET"
+        send_tree(com.gsub("|","/").sub("root","/"))
       end
     when "authenticating"
       received_hash = aes(:decrypt, "", msg, @passCipher)

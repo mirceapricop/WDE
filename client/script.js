@@ -80,7 +80,7 @@ $(function() {
         break;
       case "FETCH_FAIL":
         terminalOutput("Error at fetching. Use touch to create a new file.");
-        break;
+        break;  
       case "TREE_INS":
         split = com.indexOf('/');
         node_id = "#" + escape_id(com.slice(0, split));
@@ -216,7 +216,14 @@ $(function() {
         "folder": {
           "icon": { "image": "jstree/themes/dark_apple/folder.png" },
           "select_node": function(e) {
-            alert(e[0].id);
+            node_id = "#" + escape_id(e[0].id);
+            tree = $.jstree._reference(tree_root);
+            if(tree.is_open(node_id))
+              tree.close_node(node_id);
+            else {
+              $(node_id + " ul").empty();
+              socketSend("TREE_GET:" + e[0].id, aesKey);
+            }
           }
         },
         "default": {
