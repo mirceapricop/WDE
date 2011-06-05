@@ -18,7 +18,6 @@ These are in no particular order, and have wildly differing difficulty.
 
 * Editor panel
     * :w / :push / :autopush (maybe)
-* Project tree panel
 * Multiple shell tabs
 * Pack server into a gem
 * Completion with tab
@@ -26,6 +25,7 @@ These are in no particular order, and have wildly differing difficulty.
 * Extract connection implementation into switchable adapters
 * Fallback to -> Flash -> Long polling when WebSockets aren't there
 * Figure out collaborative edititng
+* Handle binary files. (show images, videos even?)
 
 ## Usage
 
