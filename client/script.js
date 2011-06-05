@@ -81,6 +81,14 @@ $(function() {
       case "FETCH_FAIL":
         terminalOutput("Error at fetching. Maybe a typo?");
         break;
+      case "TREE_INS":
+        split = com.indexOf('/');
+        node_id = "#" + com.slice(0, split);
+        node_json = com.slice(split+1);
+        tree = $.jstree._reference(node_id);
+        tree.create_node(node_id, "inside", $.parseJSON(node_json));
+        tree.open_node(node_id);
+        break;
       }
       break;
     }
@@ -180,24 +188,26 @@ $(function() {
   editor.getSession().setUseWrapMode(true);
   
   // Firing up the Project panel
-	tree = $("#project").jstree({ 
+	$("#project").jstree({ 
 		"json_data" : {
 			"data" : [
 				{ 
-					"data" : "A node", 
-					"children" : [ "Child 1", "A Child 2" ]
-				},
-				{ 
-					"data" : "Another node"
-				} 
-			]
+					"data" : "/", 
+					"attr": { "id": "home-mircea-dev-webDE" },
+				}
+			],
+      "progressive_render": true
 		},
 		"plugins" : [ "themes", "json_data", "ui" ],
     "themes" : {
       "theme": "dark_apple",
       "dots": false
     }
-	}).bind("select_node.jstree", function(e, data) { $("#project").jstree("toggle_node", data.rslt.obj); });
+	})
+  .bind("select_node.jstree", function(e, data) { 
+    $("#project").jstree("toggle_node", data.rslt.obj);
+  });
+  var tree_root = "#root"
   
   // Helpers
   

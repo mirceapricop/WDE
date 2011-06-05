@@ -32,7 +32,9 @@ class SocketManager
           @output_buffer << c
       
           @output_buffer.match(/^\r\r\r(.*)>/) do |m|
+            old_dir = @current_dir
             @current_dir = m[1]
+            send_tree(@current_dir) if old_dir != @current_dir
           end
 
           if @output_buffer.include? "\n"
@@ -42,6 +44,21 @@ class SocketManager
         end
       end
     end.priority=1
+  end
+
+  def tree_id(s)
+    s[1..s.length-1].gsub('/','-')
+  end
+
+  def tree_json(s)
+    '{ "attr": { "id": "'+tree_id(s)+'" }, 
+       "data": "'+File.basename(s)+'" }'
+  end
+
+  def send_tree(root)
+    Dir.glob("#{File.expand_path(root)}/*").each do |s|
+      sendClient("TREE_INS:#{tree_id(File.dirname(s))}/#{tree_json(s)}", @aesKey)
+    end
   end
 
   def set_state(state)
