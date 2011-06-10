@@ -1,11 +1,13 @@
 require 'gibberish'
 require 'pty'
 require 'cgi'
+require File.expand_path('file_manager', File.dirname(__FILE__))
 
 class SocketManager
-  
+  attr_accessor :aesKey, :current_dir
+
   def initialize(sock, pass = nil)
-    @escape = "|" #The prob of the pipe char coming up in a file name is small enough for me
+    @escape = "|" #The prob of the pipe char coming up in a file name is small enough
     
     @gsocket = sock
     @state = "disconnected"
@@ -108,8 +110,8 @@ class SocketManager
     # Kill proc executing on virtual shell
     procs = %x[ps -t #{File.basename(@shell[1].path)}].split("\n")
     procs.each do |p|
-      unless p.include? "sh" or p.include? "PID"
-        pid = p.split(' ')[0].to_i
+      pid = p.split(' ')[0]
+      unless pid.to_i == @shell[2] or p.include? "PID"
         system("kill #{pid}")
       end
     end
@@ -128,14 +130,7 @@ class SocketManager
       when "BR"
         kill_shell_procs
       when "FETCH"
-        begin
-         File.open(File.expand_path(@current_dir) + "/#{com}").each_line { |l|
-            sendClient("FETCH:"+l, @aesKey);
-          }
-          sendClient("FETCH_DONE:", @aesKey);
-        rescue
-          sendClient("FETCH_FAIL:", @aesKey);
-        end
+        FileManager.instance.fetch(com, self)
       when "TREE_GET"
         send_tree(com.gsub("|","/").sub("root","/"))
       end
@@ -162,6 +157,8 @@ class SocketManager
 
   def close_down
     @state = "disconnected"
+    kill_shell_procs
+    @shell[1].write("exit\n")
     puts "Closing shell"
   end
 end

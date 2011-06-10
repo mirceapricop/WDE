@@ -77,6 +77,7 @@ $(function() {
         break;
       case "FETCH_DONE":
         main_layout.open("north");
+        editor.gotoLine(1);
         break;
       case "FETCH_FAIL":
         terminalOutput("Error at fetching. Use touch to create a new file.");
