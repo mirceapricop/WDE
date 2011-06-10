@@ -9,10 +9,11 @@ class FileManager
   end
 
   def fetch(file, sock)
-    full_path = File.expand_path(sock.current_dir) + "/#{file}"
+    file_path = File.expand_path(sock.current_dir)+"/#{file}"
+    full_path = file_path.gsub(/\/+/, "/")
     begin
       # Try to send the file
-      File.open(full_path).each_line { |l|
+      File.open(file_path).each_line { |l|
         sock.sendClient("FETCH:"+l, sock.aesKey);
       }
 
@@ -26,9 +27,10 @@ class FileManager
       @file_sockets[full_path] << sock
 
       sock.sendClient("FETCH_DONE:", sock.aesKey);
-    rescue Exception => e
-      puts e.message
-      @file_sockets[full_path].delete(sock)
+    rescue
+      unless @file_sockets[full_path].nil?
+        @file_sockets[full_path].delete(sock)
+      end
       sock.sendClient("FETCH_FAIL:", sock.aesKey);
     end
   end
@@ -37,7 +39,6 @@ class FileManager
     file = @socket_file[sock]
     @file_sockets[file].each do |s|
       if s != sock
-        puts sock.to_s + " sends to: " + s.to_s
         s.sendClient("FETCH_CHANGE:"+delta, s.aesKey)
       end
     end
