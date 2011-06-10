@@ -18,6 +18,7 @@ $(function() {
   var state = "disconnected";
   var pass_in_use;
   var aesKey;
+  var send_changes = false;
   
   function openConnection(addr, pass) {
     state = "connecting"
@@ -47,7 +48,13 @@ $(function() {
   
   function socketClose(e) {
     state = "disconnected"
+    send_changes = false;
     terminalOutput("Closed connection");
+  }
+  
+  function sendChange(e) {
+    if(!send_changes) return;
+    socketSend("FETCH_CHANGE:"+JSON.stringify(e.data), aesKey);
   }
   
   function socketMessage(e) {
@@ -78,10 +85,17 @@ $(function() {
       case "FETCH_DONE":
         main_layout.open("north");
         editor.gotoLine(1);
+        send_changes = true;
         break;
       case "FETCH_FAIL":
         terminalOutput("Error at fetching. Use touch to create a new file.");
-        break;  
+        break;
+      case "FETCH_CHANGE":
+        // Temp turn off sending changes to prevent ping-pong
+        send_changes = false;
+        editor.getSession().doc.applyDeltas([$.parseJSON(com)]);
+        send_changes = true;
+        break;
       case "TREE_INS":
         split = com.indexOf('/');
         node_id = "#" + escape_id(com.slice(0, split));
@@ -113,6 +127,12 @@ $(function() {
     }
   });
   
+  function fetch_file(name) {
+    send_changes = false;
+    editor.getSession().setValue("");
+    socketSend("FETCH:" + name, aesKey);
+  }
+  
   function parseCommand() {
     com = $("#input_field").val();
     if(com[0] == ':') {
@@ -131,8 +151,7 @@ $(function() {
         socketSend("BR:", aesKey);
         break;
       case ":fetch":
-        editor.getSession().setValue("");
-        socketSend("FETCH:" + com.split(" ")[1], aesKey);
+        fetch_file(com.split(" ")[1]);
         break;
       default:
         terminalOutput("Don't know that one. Use \\ to escape leading :")
@@ -193,6 +212,7 @@ $(function() {
   editor.setShowPrintMargin(false);
   editor.getSession().setTabSize(2);
   editor.getSession().setUseWrapMode(true);
+  editor.getSession().on('change', sendChange);
   
   // Firing up the Project panel
   function escape_id(id) {
@@ -230,8 +250,7 @@ $(function() {
         "default": {
           "icon": { "image": "jstree/themes/dark_apple/file.png" },
           "select_node": function(e) {
-            editor.getSession().setValue("");
-            socketSend("FETCH:" + file_id_to_path(e[0].id), aesKey);
+            fetch_file(file_id_to_path(e[0].id));
           }
         }
       }

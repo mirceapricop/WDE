@@ -131,6 +131,8 @@ class SocketManager
         kill_shell_procs
       when "FETCH"
         FileManager.instance.fetch(com, self)
+      when "FETCH_CHANGE"
+        FileManager.instance.change(com, self)
       when "TREE_GET"
         send_tree(com.gsub("|","/").sub("root","/"))
       end
@@ -157,6 +159,7 @@ class SocketManager
 
   def close_down
     @state = "disconnected"
+    FileManager.instance.close_down(self)
     kill_shell_procs
     system("kill -9 #{@shell[2]}")
     Process.wait(@shell[2])
