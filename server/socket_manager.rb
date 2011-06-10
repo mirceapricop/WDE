@@ -158,7 +158,8 @@ class SocketManager
   def close_down
     @state = "disconnected"
     kill_shell_procs
-    @shell[1].write("exit\n")
+    system("kill -9 #{@shell[2]}")
+    Process.wait(@shell[2])
     puts "Closing shell"
   end
 end
