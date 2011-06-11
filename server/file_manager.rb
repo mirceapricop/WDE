@@ -1,4 +1,5 @@
 require 'singleton'
+require File.expand_path('virtual_file', File.dirname(__FILE__))
 
 class FileManager
   include Singleton
@@ -6,30 +7,46 @@ class FileManager
   def initialize
     @file_sockets = Hash.new
     @socket_file = Hash.new
+    @virtual_files = Hash.new
+  end
+
+  def load_file(fp, np)
+    @virtual_files[np] = VirtualFile.new
+    # Try to load the file
+    File.open(fp).each_line { |l|
+      @virtual_files[np].insertLine(l)
+    }
+  end
+  
+  def send_file(np, sock)
+    @virtual_files[np].each_line { |l|
+      sock.sendClient("FETCH:"+l, sock.aesKey);
+    }
   end
 
   def fetch(file, sock)
     file_path = File.expand_path(sock.current_dir)+"/#{file}"
-    full_path = file_path.gsub(/\/+/, "/")
+    norm_path = file_path.gsub(/\/+/, "/")
     begin
-      # Try to send the file
-      File.open(file_path).each_line { |l|
-        sock.sendClient("FETCH:"+l, sock.aesKey);
-      }
+      if @virtual_files[norm_path].nil?
+        load_file(file_path, norm_path)
+      end
+      send_file(norm_path, sock)
 
       # If we got here IO was ok, time to do bookkeeping
       # First unsubscribe from old file
       close_down(sock)
 
       # Subscribe to the new one
-      @socket_file[sock] = full_path
-      @file_sockets[full_path] = Array.new unless @file_sockets.has_key? full_path
-      @file_sockets[full_path] << sock
+      @socket_file[sock] = norm_path
+      @file_sockets[norm_path] = Array.new unless @file_sockets.has_key? norm_path
+      @file_sockets[norm_path] << sock
 
       sock.sendClient("FETCH_DONE:", sock.aesKey);
-    rescue
-      unless @file_sockets[full_path].nil?
-        @file_sockets[full_path].delete(sock)
+    rescue Exception => e
+      puts e.message
+      unless @file_sockets[norm_path].nil?
+        @file_sockets[norm_path].delete(sock)
       end
       sock.sendClient("FETCH_FAIL:", sock.aesKey);
     end
