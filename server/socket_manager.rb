@@ -28,6 +28,7 @@ class SocketManager
     puts "Started new shell!"
     start_shell
    
+    # This thread prints output from our virtual shell back into the socket
     Thread.new do 
       loop do
         case @state
@@ -152,7 +153,6 @@ class SocketManager
     end
   end
 
-  # This thread prints output from our virtual shell back into the socket
   def prepare_output(msg)
     CGI.escapeHTML(msg).gsub(" ", "&nbsp;")
   end
