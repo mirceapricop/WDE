@@ -71,4 +71,13 @@ class FileManager
     end
   end
 
+  def write(sock)
+    f = @socket_file[sock]
+    file = File.open("/#{f}", 'w')
+    @virtual_files[f].each_line do |l|
+      file.write(l)
+    end
+    file.close
+    sock.sendClient("TERM:File saved!", sock.aesKey)
+  end
 end

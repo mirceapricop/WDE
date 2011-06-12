@@ -134,6 +134,8 @@ class SocketManager
         FileManager.instance.fetch(com, self)
       when "FETCH_CHANGE"
         FileManager.instance.change(com, self)
+      when "FETCH_WR"
+        FileManager.instance.write(self)
       when "TREE_GET"
         send_tree(com.gsub("|","/").sub("root","/"))
       end

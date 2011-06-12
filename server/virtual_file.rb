@@ -69,6 +69,9 @@ class VirtualFile
     firstRow = range["start"]["row"]
     lastRow = range["end"]["row"]
     num_rows = lastRow - firstRow
+    while @lines.length-1 < lastRow
+      @lines << ""
+    end
     if num_rows >= 1
       lr = @lines[lastRow]
       @lines[lastRow] = lr[range["end"]["column"]..-1]
