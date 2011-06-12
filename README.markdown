@@ -9,22 +9,19 @@ browser.
 
 ####Current state:
 
-Working on bringing the terminal module close to full funcionality, while also
-enchancing the communication protocol when needed.
+Terminal and tree panel are completely functional. Concurrent editing also seems to work, but 
+corner cases are still being hunted. Concurrent sessions work perfectly.
 
 ## TODO:
 
 These are in no particular order, and have wildly differing difficulty.
 
-* Editor panel
-    * :w / :push / :autopush (maybe)
+* Implement different syntax highlighting
 * Multiple shell tabs
 * Pack server into a gem
 * Completion with tab
 * Client command history
-* Extract connection implementation into switchable adapters
 * Fallback to -> Flash -> Long polling when WebSockets aren't there
-* Figure out collaborative edititng
 * Handle binary files. (show images, videos even?)
 
 ## Usage
@@ -34,6 +31,7 @@ These are in no particular order, and have wildly differing difficulty.
 3. ruby server.rb \[password\] (If you don't specify a password, it will be "default")
 4. Now open a client in Chrome, Safari or iOs
 5. Connect with :open host password
+6. Edit your files. To write to disk press ESC to go to the command line, then ":write"
 
 ## Thanks
 
