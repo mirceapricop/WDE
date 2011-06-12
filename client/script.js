@@ -11,7 +11,6 @@ $(function() {
   
   $("#input_field").width( $("#input").width() - 20 );
   $("#output").height( $(window).height() - $("#input").height() );
-  $("#input_field").focus()
   
   // Handling the WebSocket connection
   var ws;
@@ -49,6 +48,7 @@ $(function() {
   function socketClose(e) {
     state = "disconnected"
     send_changes = false;
+    editor.getSession().setValue("");
     terminalOutput("Closed connection");
   }
   
@@ -120,10 +120,16 @@ $(function() {
   }
   
   // Handling the input commands
-  $("#input").keypress(function(e) {
+  $("#input").keyup(function(e) {
     if(e.which == "13") { // Pressed Enter
       parseCommand();
       e.preventDefault();
+    }
+  });
+  
+  $(window).keyup(function(e) {
+    if(e.which == "27") { // Pressed Escape
+      $("#input_field").focus()
     }
   });
   
@@ -152,6 +158,9 @@ $(function() {
         break;
       case ":fetch":
         fetch_file(com.split(" ")[1]);
+        break;
+      case ":write":
+        socketSend("FETCH_WR:", aesKey);
         break;
       default:
         terminalOutput("Don't know that one. Use \\ to escape leading :")
@@ -213,6 +222,8 @@ $(function() {
   editor.getSession().setTabSize(2);
   editor.getSession().setUseWrapMode(true);
   editor.getSession().on('change', sendChange);
+  
+  $("#input_field").focus()
   
   // Firing up the Project panel
   function escape_id(id) {
