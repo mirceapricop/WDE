@@ -1,6 +1,9 @@
 $(function() {
   // Loading all the editor modes
   var JavaScriptMode = require("ace/mode/javascript").Mode;
+  // Disable JS validation, slows everything down and doesn't do much
+  delete JavaScriptMode.prototype.createWorker 
+  
   var CssMode = require("ace/mode/css").Mode;
   var HtmlMode = require("ace/mode/html").Mode;
   var XmlMode = require("ace/mode/xml").Mode;
@@ -262,7 +265,7 @@ $(function() {
     onresize: resize_UI,
     north__initClosed: false,
     north__size: $(window).height()*(2/3)
-  });
+  })
   var north_layout = $('body > .ui-layout-north').layout({
     onresize: resize_UI,
     west__size: $(window).width()*(1/6)
