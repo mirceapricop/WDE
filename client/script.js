@@ -1,4 +1,31 @@
 $(function() {
+  // Loading all the editor modes
+  var JavaScriptMode = require("ace/mode/javascript").Mode;
+  var CssMode = require("ace/mode/css").Mode;
+  var HtmlMode = require("ace/mode/html").Mode;
+  var XmlMode = require("ace/mode/xml").Mode;
+  var PythonMode = require("ace/mode/python").Mode;
+  var PhpMode = require("ace/mode/php").Mode;
+  var JavaMode = require("ace/mode/java").Mode;
+  var RubyMode = require("ace/mode/ruby").Mode;
+  var CCPPMode = require("ace/mode/c_cpp").Mode;
+  var CoffeeMode = require("ace/mode/coffee").Mode;
+  var TextMode = require("ace/mode/text").Mode;
+  
+  var modes = {
+        text: new TextMode(),
+        xml: new XmlMode(),
+        html: new HtmlMode(),
+        css: new CssMode(),
+        javascript: new JavaScriptMode(),
+        python: new PythonMode(),
+        php: new PhpMode(),
+        java: new JavaMode(),
+        ruby: new RubyMode(),
+        c_cpp: new CCPPMode(),
+        coffee: new CoffeeMode()
+    };
+  
   // Resizing the fields
   function resize_terminal() {
     $("#input_field").width( $("#input").width() - 20 );
@@ -133,8 +160,35 @@ $(function() {
     }
   });
   
+  function setEditorMode(file_name) {
+    var mode = "text";
+    if (/^.*\.js$/i.test(file_name)) {
+        mode = "javascript";
+    } else if (/^.*\.xml$/i.test(file_name)) {
+        mode = "xml";
+    } else if (/^.*\.html$/i.test(file_name)) {
+        mode = "html";
+    } else if (/^.*\.css$/i.test(file_name)) {
+        mode = "css";
+    } else if (/^.*\.py$/i.test(file_name)) {
+        mode = "python";
+    } else if (/^.*\.php$/i.test(file_name)) {
+        mode = "php";
+    } else if (/^.*\.java$/i.test(file_name)) {
+        mode = "java";
+    } else if (/^.*\.rb$/i.test(file_name)) {
+        mode = "ruby";
+    } else if (/^.*\.(c|cpp|h|hpp|cxx)$/i.test(file_name)) {
+        mode = "c_cpp";
+    } else if (/^.*\.coffee$/i.test(file_name)) {
+        mode = "coffee";
+    } 
+    editor.getSession().setMode(modes[mode]);
+  }
+  
   function fetch_file(name) {
     send_changes = false;
+    setEditorMode(name);
     editor.getSession().setValue("");
     socketSend("FETCH:" + name, aesKey);
   }
