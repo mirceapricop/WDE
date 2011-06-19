@@ -47,7 +47,7 @@ class SocketManager
 
           # Send the escaped character, with a random string appended
           # For security
-          sendClient("TERM:"+prepare_output(c)+rand.to_s,@aesKey) if @state=="live"
+          sendClient("TERM:"+prepare_output(c)+rand.to_s[2..7],@aesKey) if @state=="live"
           if @output_buffer.include? "\n"
             @output_buffer = ""
           end
