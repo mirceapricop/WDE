@@ -107,7 +107,9 @@ $(function() {
       switch(com_type) {
       case "TERM":
         terminalChar(com);
-        terminalChar('\n');
+        break;
+      case "TERM_FULL":
+        terminalOutput(com);
         break;
       case "FETCH":
         editor.insert(com);
@@ -240,6 +242,13 @@ $(function() {
   }
   
   function terminalChar(c) {
+    // Check for normal or escaped
+    split = c.indexOf(';')
+    if(split == -1)
+      c = c[0]
+    else
+      c = c.slice(0, split+1)
+      
     if(c == '\n') {
       $(".last").removeClass("last");
       $("#output_lines").append("<li class='last' ></li>");

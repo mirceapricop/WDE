@@ -45,8 +45,10 @@ class SocketManager
             end
           end
 
+          # Send the escaped character, with a random string appended
+          # For security
+          sendClient("TERM:"+prepare_output(c)+rand.to_s,@aesKey) if @state=="live"
           if @output_buffer.include? "\n"
-            sendClient("TERM:"+prepare_output(@output_buffer),@aesKey) if @state=="live"
             @output_buffer = ""
           end
         end
@@ -150,7 +152,7 @@ class SocketManager
       end
     when "sync_key"
       @aesKey = aes(:decrypt, "", msg, @passCipher)
-      sendClient("TERM: Connection established. Type away!", @aesKey)
+      sendClient("TERM_FULL: Connection established. Type away!", @aesKey)
       @state = "live"
     end
   end
