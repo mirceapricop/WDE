@@ -10,18 +10,18 @@ browser.
 ####Current state:
 
 Terminal and tree panel are completely functional. Concurrent editing also seems to work, but 
-corner cases are still being hunted. Concurrent sessions work perfectly.
+only as long as people take turns. Concurrent sessions work perfectly.
 
 ## TODO:
 
 These are in no particular order, and have wildly differing difficulty.
 
-* Implement different syntax highlighting
+* Implement basic operational transformation
+* Implement compound operational transformation
 * Multiple shell tabs
 * Pack server into a gem
 * Completion with tab
 * Client command history
-* Fallback to -> Flash -> Long polling when WebSockets aren't there
 * Handle binary files. (show images, videos even?)
 
 ## Usage
