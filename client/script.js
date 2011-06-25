@@ -48,6 +48,7 @@ $(function() {
   // OT variables
   var send_changes = false;
   var file_version = 0;
+  var buffering = false;
   
   // Let the library know where WebSocketMain.swf is:
   WEB_SOCKET_SWF_LOCATION = "WebSocketMain.swf";
@@ -81,12 +82,14 @@ $(function() {
   function socketClose(e) {
     state = "disconnected"
     send_changes = false;
-    editor.getSession().setValue("");
+    // Commented to see last state
+    //editor.getSession().setValue("");
     terminalOutput("Closed connection");
   }
   
   function sendChange(e) {
     if(!send_changes) return;
+    buffering = true;
     editor.setReadOnly(true);
     e.data["version"] = file_version;
     socketSend("FETCH_CHANGE:"+JSON.stringify(e.data), aesKey);
@@ -123,6 +126,7 @@ $(function() {
         main_layout.open("north");
         editor.gotoLine(1);
         send_changes = true;
+        buffering = false;
         editor.setReadOnly(false);
         file_version = parseInt(com);
         break;
@@ -132,11 +136,15 @@ $(function() {
       case "FETCH_CHANGE":
         // Temp turn off sending changes to prevent ping-pong
         send_changes = false;
+        if (buffering) {
+          terminalOutput("Conflict");
+        }
         editor.getSession().doc.applyDeltas([$.parseJSON(com)]);
         file_version += 1;
         send_changes = true;
         break;
       case "FETCH_ACK":
+        buffering = false;
         editor.setReadOnly(false);
         file_version = parseInt(com);
         break;

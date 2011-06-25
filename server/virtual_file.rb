@@ -18,7 +18,7 @@ class VirtualFile
   end
 
   def apply_delta(delta)
-    puts delta["version"] - @version
+    puts "Conflict" if delta["version"] != @version
     case delta["action"]
     when "insertLines"
       insertLines(delta["range"]["start"]["row"], delta["lines"])
