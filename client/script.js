@@ -88,6 +88,7 @@ $(function() {
   function sendChange(e) {
     if(!send_changes) return;
     editor.setReadOnly(true);
+    e.data["version"] = file_version;
     socketSend("FETCH_CHANGE:"+JSON.stringify(e.data), aesKey);
   }
   
@@ -95,7 +96,7 @@ $(function() {
     switch(state) {
     case "authenticating":
       if(GibberishAES.dec(e.data, pass_in_use) == "AUTHOK") {
-        aesKey = randomString();
+        aesKey = randomString(64);
         terminalOutput("Syncing AES key...");
         socketSend(aesKey, pass_in_use);
         state = "live"
@@ -122,6 +123,7 @@ $(function() {
         main_layout.open("north");
         editor.gotoLine(1);
         send_changes = true;
+        editor.setReadOnly(false);
         file_version = parseInt(com);
         break;
       case "FETCH_FAIL":
@@ -131,10 +133,12 @@ $(function() {
         // Temp turn off sending changes to prevent ping-pong
         send_changes = false;
         editor.getSession().doc.applyDeltas([$.parseJSON(com)]);
+        file_version += 1;
         send_changes = true;
         break;
       case "FETCH_ACK":
         editor.setReadOnly(false);
+        file_version = parseInt(com);
         break;
       case "TREE_INS":
         split = com.indexOf('/');
@@ -226,9 +230,24 @@ $(function() {
       case ":fetch":
         fetch_file(com.split(" ")[1]);
         break;
+      case ":w":
       case ":write":
         socketSend("FETCH_WR:", aesKey);
         break;
+      // Used for concurrent editing dev-ing
+      case ":drone":
+        // Start typing random characters
+        drone = setInterval(function() {
+          editor.insert(randomString(1));
+        }, 1000);
+        break;
+      case ":stop":
+        clearInterval(drone);
+        break;
+      case ":v":
+        terminalOutput(file_version);
+        break;
+      // Dev tools end
       default:
         terminalOutput("Don't know that one. Use \\ to escape leading :")
       }
@@ -350,9 +369,9 @@ $(function() {
   
   // Helpers
   
-  function randomString() {
+  function randomString(len) {
     var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-    var string_length = 64;
+    var string_length = len;
     var randomstring = '';
     for (var i=0; i<string_length; i++) {
       var rnum = Math.floor(Math.random() * chars.length);
