@@ -5,6 +5,7 @@ class VirtualFile
   def initialize
     @lines = Array.new
     @version = 0
+    @delta_log = Array.new
   end
 
   def insertLine(l)
@@ -18,7 +19,10 @@ class VirtualFile
   end
 
   def apply_delta(delta)
-    puts "Conflict" if delta["version"] != @version
+    if delta["version"] != @version
+      # OT conflict, just resolve with last delta for now
+      delta = OpTrans::xform(delta, @delta_log[-1])[0] # a'
+    end
     case delta["action"]
     when "insertLines"
       insertLines(delta["range"]["start"]["row"], delta["lines"])
@@ -30,6 +34,7 @@ class VirtualFile
       remove(delta["range"])
     end
     @version += 1
+    @delta_log << delta
   end
 
   def insertLines(row, lines)

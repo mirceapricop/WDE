@@ -45,11 +45,6 @@ $(function() {
   var pass_in_use;
   var aesKey;
   
-  // OT variables
-  var send_changes = false;
-  var file_version = 0;
-  var buffering = false;
-  
   // Let the library know where WebSocketMain.swf is:
   WEB_SOCKET_SWF_LOCATION = "WebSocketMain.swf";
   
@@ -92,6 +87,7 @@ $(function() {
     buffering = true;
     editor.setReadOnly(true);
     e.data["version"] = file_version;
+    buffered_delta = e.data;
     socketSend("FETCH_CHANGE:"+JSON.stringify(e.data), aesKey);
   }
   
@@ -136,10 +132,12 @@ $(function() {
       case "FETCH_CHANGE":
         // Temp turn off sending changes to prevent ping-pong
         send_changes = false;
+        delta = $.parseJSON(com)
         if (buffering) {
-          terminalOutput("Conflict");
+          // OT conflict
+          delta = xform(delta, buffered_delta)[1]; // b'
         }
-        editor.getSession().doc.applyDeltas([$.parseJSON(com)]);
+        editor.getSession().doc.applyDeltas([delta]);
         file_version += 1;
         send_changes = true;
         break;
@@ -374,6 +372,19 @@ $(function() {
     "plugins" : [ "themes", "json_data", "ui", "types" ]
 	});
   var tree_root = "#root"
+  
+  // OT starts here
+  // OT variables
+  var send_changes = false;
+  var file_version = 0;
+  var buffering = false;
+  var buffered_delta;
+  
+  // OT primitive
+  // Returns [a', b'], representing the actions
+  // Needed to bring client and server to same state
+  function xform(a, b) {
+  }
   
   // Helpers
   
