@@ -44,7 +44,10 @@ $(function() {
   var state = "disconnected";
   var pass_in_use;
   var aesKey;
+  
+  // OT variables
   var send_changes = false;
+  var file_version = 0;
   
   // Let the library know where WebSocketMain.swf is:
   WEB_SOCKET_SWF_LOCATION = "WebSocketMain.swf";
@@ -84,6 +87,7 @@ $(function() {
   
   function sendChange(e) {
     if(!send_changes) return;
+    editor.setReadOnly(true);
     socketSend("FETCH_CHANGE:"+JSON.stringify(e.data), aesKey);
   }
   
@@ -118,6 +122,7 @@ $(function() {
         main_layout.open("north");
         editor.gotoLine(1);
         send_changes = true;
+        file_version = parseInt(com);
         break;
       case "FETCH_FAIL":
         terminalOutput("Error at fetching. Use touch to create a new file.");
@@ -127,6 +132,9 @@ $(function() {
         send_changes = false;
         editor.getSession().doc.applyDeltas([$.parseJSON(com)]);
         send_changes = true;
+        break;
+      case "FETCH_ACK":
+        editor.setReadOnly(false);
         break;
       case "TREE_INS":
         split = com.indexOf('/');

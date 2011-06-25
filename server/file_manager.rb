@@ -47,7 +47,7 @@ class FileManager
     @socket_file[sock] = norm_path
     @file_sockets[norm_path] = Array.new unless @file_sockets.has_key? norm_path
     @file_sockets[norm_path] << sock
-    sock.sendClient("FETCH_DONE:", sock.aesKey);
+    sock.sendClient("FETCH_DONE:#{@virtual_files[norm_path].version}", sock.aesKey);
   end
 
   def change(delta, sock)
@@ -58,6 +58,7 @@ class FileManager
         s.sendClient("FETCH_CHANGE:"+delta, s.aesKey)
       end
     end
+    sock.sendClient("FETCH_ACK:#{@virtual_files[file].version}", sock.aesKey)
   end
 
   def close_down(sock)

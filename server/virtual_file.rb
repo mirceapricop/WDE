@@ -1,7 +1,10 @@
 class VirtualFile
 
+  attr_accessor :version
+
   def initialize
     @lines = Array.new
+    @version = 0
   end
 
   def insertLine(l)
@@ -25,6 +28,7 @@ class VirtualFile
     when "removeText"
       remove(delta["range"])
     end
+    @version += 1
   end
 
   def insertLines(row, lines)
