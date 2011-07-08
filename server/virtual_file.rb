@@ -19,6 +19,7 @@ class VirtualFile
   end
 
   def apply_delta(delta)
+    puts "Applying #{delta.inspect} to #{@version}"
     if delta["version"] != @version
       # OT conflict, just resolve with last delta for now
       delta = OpTrans::xform(delta, @delta_log[-1])[0] # a'

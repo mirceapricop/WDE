@@ -79,6 +79,6 @@ class FileManager
       file.write(l)
     end
     file.close
-    sock.sendClient("TERM:File saved!", sock.aesKey)
+    sock.sendClient("TERM_FULL:File saved!", sock.aesKey)
   end
 end
