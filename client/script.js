@@ -135,7 +135,7 @@ $(function() {
         delta = $.parseJSON(com)
         if (buffering) {
           // OT conflict
-          delta = xform(delta, buffered_delta)[1]; // b'
+          delta = xform(buffered_delta, delta)[1]; // b'
         }
         editor.getSession().doc.applyDeltas([delta]);
         file_version += 1;
@@ -384,6 +384,7 @@ $(function() {
   // Returns [a', b'], representing the actions
   // Needed to bring client and server to same state
   function xform(a, b) {
+		return [a, b]
   }
   
   // Helpers

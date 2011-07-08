@@ -1,3 +1,4 @@
+require File.expand_path('op_trans', File.dirname(__FILE__))
 class VirtualFile
 
   attr_accessor :version
