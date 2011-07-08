@@ -39,10 +39,10 @@ class FileManager
       sock.sendClient("FETCH_FAIL:", sock.aesKey);
       return;
     end
-    # If we got here IO was ok, time to do bookkeeping
     send_file(norm_path, sock)
-    # First unsubscribe from old file
-    close_down(sock)
+    # If we got here IO was ok, time to do bookkeeping
+    # First unsubscribe from old file, but not if it's the same one
+    close_down(sock) unless norm_path == @socket_file[sock] 
     # Subscribe to the new one
     @socket_file[sock] = norm_path
     @file_sockets[norm_path] = Array.new unless @file_sockets.has_key? norm_path
