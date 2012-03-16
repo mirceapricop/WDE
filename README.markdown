@@ -27,10 +27,10 @@ These are in no particular order, and have wildly differing difficulty.
 ## Usage
 
 1. You need some sort of server with ruby and linux/cygwn
-2. ssh in it, install gem dependencies (em-websocket and gibberish)
-3. ruby server.rb \[password\] (If you don't specify a password, it will be "default")
+2. ssh in it, install gem dependencies (`em-websocket` and `gibberish`)
+3. `ruby server.rb \[password\]` (If you don't specify a password, it will be "default")
 4. Now open a client in Chrome, Safari or iOs
-5. Connect with :open host password
+5. Connect with `:open host password`
 6. Edit your files. To write to disk press ESC to go to the command line, then ":write"
 
 ## Thanks
